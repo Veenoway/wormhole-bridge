@@ -9,7 +9,7 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useLocation } from "react-router";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 import Attest from "./components/Attest";
@@ -78,6 +78,33 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set("cluster", event.target.value);
     window.location.search = urlParams;
+  }, []);
+  let headersList = {
+    Accept: "application/x-www-form-urlencoded",
+    "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+  };
+
+  useEffect(() => {
+    async function handler(req, res) {
+      const toLowerCase = (str) => str.toLowerCase();
+      const cluster = toLowerCase("0x9e7c4aab181d54007f51f25c71578c8e84ed8f84");
+      try {
+        let response = await fetch(
+          `https://prod-flat-files-min.wormhole.com/${cluster}_2.json`,
+          {
+            method: "GET",
+            headers: headersList,
+          }
+        );
+        console.log("BEFORE DATA", response);
+        const data = await response.json();
+        console.log("MY FULL DATA", data);
+      } catch (error) {
+        console.log("HERE IS AN ERROR", error);
+        // res.status(404).json({ error: "not eligible" });
+      }
+    }
+    handler();
   }, []);
   return (
     <div className={classes.bg}>
